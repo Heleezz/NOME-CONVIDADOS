@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Confirmação de Presença</title>
+</head>
+<body>
+  <h1>Confirme sua presença no aniversário!</h1>
+  <form id="form">
+    <label>Digite seu nome:</label><br />
+    <input type="text" id="nome" required />
+    <button type="submit">Enviar</button>
+  </form>
+  <p id="resposta"></p>
+
+  <script>
+    const form = document.getElementById('form');
+    const resposta = document.getElementById('resposta');
+
+    const WEB_APP_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resposta.textContent = 'Enviando...';
+
+      const nome = document.getElementById('nome').value.trim();
+      if (!nome) {
+        resposta.textContent = 'Por favor, digite seu nome.';
+        return;
+      }
+
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify({ nome }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await res.json();
+
+        resposta.textContent = data.message;
+        resposta.style.color = data.success ? 'green' : 'red';
+
+        if (data.success) form.reset();
+
+      } catch (err) {
+        resposta.textContent = 'Erro ao enviar: ' + err.message;
+        resposta.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
+
